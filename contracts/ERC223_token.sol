@@ -10,7 +10,8 @@ import './SafeMath.sol';
  * https://github.com/Dexaran/ERC223-token-standard
  */
 
-contract ERC223Token is ERC223, SafeMath {
+contract ERC223Token is ERC223 {
+  using SafeMath for uint256;
 
   mapping(address => uint) balances;
 
@@ -43,8 +44,10 @@ contract ERC223Token is ERC223, SafeMath {
 
     if(isContract(_to)) {
       if (balanceOf(msg.sender) < _value) revert();
-      balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
-      balances[_to] = safeAdd(balanceOf(_to), _value);
+      // balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
+      // balances[_to] = safeAdd(balanceOf(_to), _value);
+      balances[msg.sender] = balanceOf(msg.sender).sub(_value);
+      balances[_to] = balanceOf(_to).add(_value);
       assert(_to.call.value(0)(bytes4(keccak256(_custom_fallback)), msg.sender, _value, _data));
       Transfer(msg.sender, _to, _value, _data);
       return true;
@@ -94,8 +97,10 @@ contract ERC223Token is ERC223, SafeMath {
   //function that is called when transaction target is an address
   function transferToAddress(address _to, uint _value, bytes _data) private returns (bool success) {
     if (balanceOf(msg.sender) < _value) revert();
-    balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
-    balances[_to] = safeAdd(balanceOf(_to), _value);
+    // balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
+    // balances[_to] = safeAdd(balanceOf(_to), _value);
+    balances[msg.sender] = balanceOf(msg.sender).sub(_value);
+    balances[_to] = balanceOf(_to).add(_value);
     Transfer(msg.sender, _to, _value, _data);
     return true;
   }
@@ -103,8 +108,10 @@ contract ERC223Token is ERC223, SafeMath {
   //function that is called when transaction target is a contract
   function transferToContract(address _to, uint _value, bytes _data) private returns (bool success) {
     if (balanceOf(msg.sender) < _value) revert();
-    balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
-    balances[_to] = safeAdd(balanceOf(_to), _value);
+    // balances[msg.sender] = safeSub(balanceOf(msg.sender), _value);
+    // balances[_to] = safeAdd(balanceOf(_to), _value);
+    balances[msg.sender] = balanceOf(msg.sender).sub(_value);
+    balances[_to] = balanceOf(_to).add(_value);
     ContractReceiver receiver = ContractReceiver(_to);
     receiver.tokenFallback(msg.sender, _value, _data);
     Transfer(msg.sender, _to, _value, _data);
