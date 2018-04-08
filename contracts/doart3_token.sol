@@ -1,30 +1,56 @@
-pragma solidity ^0.4.9;
+pragma solidity ^0.4.19;
 
-import './CrowdSale.sol';
-import './ERC223_token.sol';
+ /**
+ * @title Contract that will work with ERC223 tokens.
+ */
 
+import "./ERC223.sol";
+
+/**
+ * @title ERC223 standard token implementation.
+ */
 contract Doart3Token is ERC223Token {
+    using SafeMath for uint;
 
-  function Doart3Token() public {
-    name = 'doart3 token';
-    symbol = 'DRT';
-    decimals = 8;
-    totalSupply = 10000000; // 10M
-    balances[msg.sender] = totalSupply;
-  }
-}
+    // Owner of this contract
+    address private _owner;
 
+    // Functions with this modifier can only be executed by the owner
+    modifier onlyOwner() {
+        if (msg.sender != _owner) {
+            revert();
+        }
+        _;
+    }
 
-contract Doart3Crowdsale is CappedCrowdsale, RefundableCrowdsale {
+    // Functions with this modifier can not have the owner as a counterparty
+    modifier noOwnerAsCounterparty(address counterparty) {
+        if (counterparty == _owner) {
+            revert();
+        }
+        _;
+    }
 
-  function Doart3Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, uint256 _goal, uint256 _cap, address _wallet, ERC223Token _token) public
-    CappedCrowdsale(_cap)
-    FinalizableCrowdsale()
-    RefundableCrowdsale(_goal)
-    Crowdsale(_startTime, _endTime, _rate, _wallet, _token)
-  {
-    //As goal needs to be met for a successful crowdsale
-    //the value needs to less or equal than a cap which is limit for accepted funds
-    require(_goal <= _cap);
-  }
+    // Constructor
+    function Doart3Token(string _symbol, string _name) public {
+        symbol = _symbol;
+        name = _name;
+        _owner = msg.sender;
+        totalSupply = 0;
+        decimals = 3;
+    }
+
+    function fund(address member, uint256 value) public onlyOwner noOwnerAsCounterparty(member) {
+        _balances[member] = _balances[member].add(value);
+        totalSupply = totalSupply.add(value);
+    }
+
+    function defund(uint256 value) public noOwnerAsCounterparty(msg.sender) {
+        _balances[msg.sender] = _balances[msg.sender].sub(value);
+        totalSupply = totalSupply.sub(value);
+    }
+
+    function GetOwner() public view returns (address) {
+      return _owner;
+    }
 }

@@ -1,20 +1,9 @@
-pragma solidity ^0.4.9;
+pragma solidity ^0.4.11;
 
- /* New ERC23 contract interface */
-
-contract ERC223 {
-  uint public totalSupply;
-  function balanceOf(address who) public view returns (uint);
-
-  function name() public view returns (string _name);
-  function symbol() public view returns (string _symbol);
-  function decimals() public view returns (uint8 _decimals);
-  function totalSupply() public view returns (uint256 _supply);
-
-  function transfer(address to, uint value) public returns (bool ok);
-  function transfer(address to, uint value, bytes data) public returns (bool ok);
-  function transfer(address to, uint value, bytes data, string custom_fallback) public returns (bool ok);
-
-  event Transfer(address from, address to, uint value, bytes data);
-  // event Transfer(address indexed from, address indexed to, uint value, bytes indexed data);
+contract ERC223Interface {
+    uint public totalSupply;
+    function balanceOf(address who) constant returns (uint);
+    function transfer(address to, uint value) public returns (bool);
+    function transfer(address to, uint value, bytes data) public returns (bool);
+    event Transfer(address indexed from, address indexed to, uint value, bytes data);
 }
