@@ -10,6 +10,7 @@
   "license": "ISC",
   "devDependencies": {
     "ganache-cli": "^6.0.3",
-    "truffle": "^4.0.6"
+    "truffle": "^4.0.6",
+    "web3-eth-abi": "^1.0.0-beta.33"
   }
 }
